@@ -1,0 +1,2 @@
+libA.so
+libB.so

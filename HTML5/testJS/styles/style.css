@@ -1,0 +1,44 @@
+/*body        {color:white; background-image:url("../icons/planet.jpg")}*/
+body        {color:white}
+h1          {color:blue; text-align:center}
+p           {color:green; margin-left:10px}
+#outputText {color: lightgreen; margin-left:20px}
+
+/* # definisce un id; . definisce una class */
+#menu
+{
+    display     : block;
+    top         : 10px;
+
+/*
+    margin-left : auto;
+    margin-right: auto;
+    width       : auto;
+*/
+    z-index     : 1;
+    left        : 200px;
+    position    : fixed;
+    width       : 180px;
+
+    border      : 1px solid #0f0;
+    padding     : 10px;
+    text-align  : center;
+    font-weight : bold;
+    font-family : verdana, arial, sans-serif;
+    color       : #f0f;
+}
+
+.outputWiFi
+{
+    display     : block;
+
+    margin-left : 100px;
+    margin-right: 100px;
+    width       : auto;
+
+    border      : 1px solid green;
+    padding     : 10px;
+    text-align  : left;
+    font-family : verdana, arial, sans-serif;
+    color       : red;
+}

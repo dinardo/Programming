@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="styles/style.css">
+    <script src="scripts/clientServer.js"></script>
+    <title>My HTML5</title>
+  </head>
+
+
+  <body>
+
+    <div id="menu" style="float:top">
+      Welcome !
+    </div>
+    
+    <div style="position:relative; top:80px">
+      <h1>My First Heading...</h1>
+      
+      <hr>
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
+      do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+      nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+      reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+      pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+      culpa qui officia deserunt mollit anim id est laborum.
+      <hr>
+
+      <p>My first paragraph...</p>
+
+      <script src="scripts/time.js"></script>
+
+      <script>
+	function getInfo()
+	{
+	alert("YOU ARE AMAZING !");
+	}
+      </script>
+
+      <input type="submit" value="Get info" onclick="getInfo()"/>
+      <button id="amazing" onclick="getInfo()">Am I amazing ?</button>
+
+      <hr>
+
+      <!-- Client-Server comunication -->
+      <div id="inputArea">
+	Search string: <input id="inputData" type="text" name="serverQuery" placeholder="Write your string" required>
+ 	<input type="submit" value="Click me to run" onclick="callServer.launch()">
+      </div>
+
+      <hr>
+
+      <div id="outputArea">
+	<p style="text-align:center">Search results</p>
+	
+        <div id="outputText" class="searchstr">
+        </div>
+      </div>
+
+    </div>
+
+  </body>
+
+</html>

@@ -1,0 +1,247 @@
+################################################################################
+# If you need a makefile for your project, you might be able to use
+# this one as a starting point and get away with merely modifying the
+# next few variables.
+# NB, this file was written for GNU make, and therefore uses some
+# features which other makes do not support. They also rely on gcc's
+# automatic dependency generation features (also available in clang).
+################################################################################
+
+# In general, makefiles and the practices which surround them are very
+# complex. They are beyond the scope of this course.
+
+# I have tried to provide fairly explicit comments describing the
+# features of this makefile, to act as a brief tutorial on makefiles,
+# and to give you a starting point from which to start your own
+# exploration, should you have the need.
+
+# The name of the executable you are generating
+EXECUTABLE := particles
+
+# The filename extension you use for your C++ program source
+# files. G++ allows: .cc .cp .cxx .cpp .CPP .c++ .C
+CXXEXTENSION := cc
+
+# Any file in the current directory with the appropriate filename
+# extension, is taken to be a source file
+SOURCES := $(wildcard *.$(CXXEXTENSION))
+
+# Alternatively you could specify the source files explicitly.
+# SOURCES := main.cc Animal.cc Kitten.cc Puppy.cc Goldfish.cc
+
+# The non-standard directories which should be searched when for
+# #including files.
+UNAME := $(shell uname)
+ifeq ($(UNAME), Darwin)
+INCLUDES := -I /usr/X11/include
+endif
+ifeq ($(UNAME), Linux)
+INCLUDES := 
+endif
+
+# Command line flags passed to the compiler at the link stage. This
+# typically contains information about where to find dynamic libraries
+# against which you need to link.
+LBITS := $(shell getconf LONG_BIT)
+
+LDFLAGS := -ansi -pedantic -Wall opengl.cc -g 
+ifeq ($(UNAME), Darwin)
+LDFLAGS := -framework GLUT -framework OpenGL
+endif
+ifeq ($(UNAME), Linux)
+ifeq ($(LBITS), 32)
+LDFLAGS := -L /usr/lib -lglut
+endif
+ifeq ($(LBITS), 64)
+LDFLAGS := -L /usr/lib64 -lglut
+endif
+endif
+
+################################################################################
+# The rest of the file is generic, and may well work for you without
+# modification.
+################################################################################
+
+# Keep all the intermediate generated files (objects files and
+# dependency files: everything except the final executable) in a
+# separate directory. 
+OBJSDIR := obj
+
+# If you want the intermediate files to be stored in the source
+# directory:
+# OBJSDIR := .
+
+# The compiler to be used. This single command gives access to the
+# preprocessor, compiler and linker.
+CXX := g++
+# clang should work equally well, if available.
+# If you do not define this variable, GNU make will give it the
+# default value: g++. This variable is used in the implicit rule (see
+# below) for making .o files from .cc files.
+
+# Let the compiler take care of finding the correct linker.
+LD := $(CXX)
+
+# Command line flags passed to the compiler at the compilation stage
+CXXFLAGS := -ansi -pedantic -Wall -g -c $(INCLUDES)
+# If you do not define this variable, GNU make makes it empty by
+# default. This variable is used in the implicit rule (see
+# below) for making .o files from .cc files.
+
+# Ask the preprocessor to automatically generate dependency rules by
+# tracking what files it has included.
+CPPFLAGS += -MD -MP
+
+# The names of the object files are derived form the names of the
+# source files.
+OBJS := $(SOURCES:%.$(CXXEXTENSION)=$(OBJSDIR)/%.o)
+# The names of the dependency files are derived from the names of the
+# object files.
+DEPS := $(OBJS:%.o=%.d)
+
+# .PHONY is used to specify those targets which do not correspond to
+# file names of make products.
+.PHONY: all clean
+
+# This is the default target: it will be made if you do not specify a
+# target when you invoke make. It is the default because it is the
+# first target (whose name does not start with a dot) in the file.
+all: $(EXECUTABLE)
+# A target is some file (unless it's a .PHONY target) that might need
+# to be generated. The target name is what appears before the colon.
+# The dependencies (also called prerequisites) are specified after the
+# colon. A target must be remade if any of the dependencies have
+# changed since the target was last made. If none of the dependencies
+# have changed, then the target is up to date, and need not be remade.
+# The above rule provides no actions to be performed in order to make
+# the target, it merely states that nothing has to be done unless the
+# executable needs remaking. This forces make to check whether the
+# executable needs remaking, which forces it to check whether its
+# dependencies need remaking, which forces further checks, and so on.
+
+# This rule states that the executable must be remade if any of the
+# object files need remaking,
+$(EXECUTABLE): $(OBJS)
+# and that it is made by linking all the object files.
+	$(LD) -o $@ $^ $(LDFLAGS)
+# Note that the syntax of makefiles demands that action lines start
+# with a TAB *not* with spaces.
+
+# A .PHONY targed for quick removal of all generated files. clean has
+# no dependencies, therefore its actions will be executed every time
+# you ask for it (i.e. even if all files are up to date).
+clean:
+# Cleaning means removing any files that make might have generated.
+	$(RM) $(OBJS) $(DEPS) $(EXECUTABLE)
+# RM has a default value of "rm -f".
+
+##################################################
+# Dependency generation
+##################################################
+
+# The dependencies of object files are normally the headers which are
+# included in the corresponding source files, plus any headers which
+# those headers included (which may include more headers). Keeping
+# track of this is very difficult. Fortunately we can ask the compiler
+# to work out these dependencies for us.
+
+# For every source file, we will generate a dependency rule for its
+# object file. This rule will be stored in a file with a .d suffix,
+# and all these files will be included in this makefile.
+
+# A pattern rule (see below): Object files depend on source files.
+$(OBJSDIR)/%.o: %.$(CXXEXTENSION)
+	$(CXX) -o $@ $< -c $(CXXFLAGS) $(CPPFLAGS)
+# The last line is very dense. Let's look at its components:
+#
+# $(CXX) -o $@ $< -c $(CXXFLAGS)
+#
+#     Make the object file by compiling the source file.
+#
+# $(CPPFLAGS)  - this is set to  -MMD -MP
+#
+# -MMD  (or -MD)
+#
+#     Ask the preprocessor to generate dependency rules which list all
+#     the files that the preprocessor included, when processing the
+#     file. (-MD lists system headers, -MMD does not: the former is
+#     more robust, the latter is more efficient.)
+#
+# -MP
+#
+#     Helps avoid errors in situations where header files are removed.
+
+# The rules stored in the dependency files should be part of this
+# makefile.
+-include $(DEPS)
+
+# ======================================================================
+# Make sure that the directory where we hide .o and .d files, exists.
+
+# All the files that are stored in the directory depend on the
+# directory. Note the vertical bar '|' in the dependency list.
+$(OBJS) $(DEPS): | $(OBJSDIR)
+# Normal prerequisites impose not only an order in which the various
+# build steps must take place (this must be done before that can be
+# done), but also state that if the dependency is newer than the
+# target, then the target must be remade (if foo.cc is newer than
+# foo.o then the latter must be recompiled). In this case, we do not
+# want the .o and .d files to be remade if the timestamp on the
+# directory is more recent (as will be the case if anything inside the
+# directory has changed). /Order-only/ prerequisites help in this
+# case. A vertical bar in a prerequisite list indicates that all
+# following prerequisites are order-only: their time stamp being more
+# recent is not enough reason to remake the target.
+
+# How to make the object directory.
+$(OBJSDIR):
+	mkdir -p $(OBJSDIR)
+
+##################################################
+# Automatic variables and other cryptic symbols
+##################################################
+
+# $@  The file name of the target.
+
+# $<  The name of the first dependency.
+
+# $*  Whatever was matched in a pattern rule (see %).
+
+# $?  The names of all the dependencies newer than the target
+#     separated by spaces.
+
+# $^  The names of all the dependencies separated by spaces, but with
+#     duplicate names removed.
+
+# $+  The names of all the dependencies separated by spaces with
+#     duplicate names included and in the same order as in the rule.
+
+# @  At the beginning of a command line, suppresses the printing of the
+#    command line.
+
+# %  Pattern matching component of a target name: whatever is matched
+#    is accessible via $* in the rest of the rule.
+
+##############################
+# Implicit rules
+##############################
+
+# Some rules are used in almost every makefile which touches a given
+# language. For example, any makefile compiling C++ programs is likely
+# to compile C++ source files to object files by using the C++
+# compiler and passing it C++ compiler flags. The rule for this would
+# be:
+
+# %.o : %.cc
+# 	$(CXX) $(CXXFLAGS) $< -o $@
+
+# Such rules are present by default, and are called implicit rules.
+
+
+# For the full story, read the manual:
+
+#   http://www.gnu.org/software/make/manual/make.html
+
+# Local Variables:
+# mode:makefile-gmake
+# End:
