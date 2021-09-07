@@ -13,8 +13,6 @@
 #include "DataStructure.h"
 #include "SocketUtils.h"
 
-#define SLEEPTIME 5 // [s]
-
 template<typename T>
 void DeSerializer(const T& theStream, EventData::DataStructure& theData)
 {
@@ -46,7 +44,7 @@ int main(int argc, char* argv[])
   std::cout << "Server is listening on port: " << argv[1] << std::endl;
   acceptorServer.accept(serverSocket);
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(SLEEPTIME));
+  std::this_thread::sleep_for(std::chrono::milliseconds(SocketUtils::SLEEPTIME));
 
   // ################################
   // # Waiting for STARTING command #
@@ -54,7 +52,7 @@ int main(int argc, char* argv[])
   std::cout << "Waiting for STARTING command" << std::endl;
   do
     {
-      std::this_thread::sleep_for(std::chrono::milliseconds(SLEEPTIME));
+      std::this_thread::sleep_for(std::chrono::milliseconds(SocketUtils::SLEEPTIME));
     } while ((command = SocketUtils::getData(serverSocket, SocketUtils::ENDOFMSG)).find("STARTING") == std::string::npos);
   std::cout << "Received command: " << command << std::endl;
 
@@ -63,8 +61,7 @@ int main(int argc, char* argv[])
   // #########################
   std::cout << "Sending START command" << std::endl;
   SocketUtils::sendData(serverSocket, "START", SocketUtils::ENDOFMSG);
-
-  std::this_thread::sleep_for(std::chrono::milliseconds(SLEEPTIME));
+  std::this_thread::sleep_for(std::chrono::milliseconds(SocketUtils::SLEEPTIME));
 
   // ####################
   // # Waiting for DATA #
@@ -78,8 +75,8 @@ int main(int argc, char* argv[])
   std::cout << theData.data2 << std::endl;
   std::cout << theData.subVec[0].subData1 << std::endl;
   std::cout << theData.subVec[0].subData2 << std::endl;
-
-  std::this_thread::sleep_for(std::chrono::milliseconds(SLEEPTIME));
+  std::cout << "=====================" << std::endl;
+  std::this_thread::sleep_for(std::chrono::milliseconds(SocketUtils::SLEEPTIME));
 
   // ################################
   // # Waiting for STOPPING command #
@@ -87,7 +84,7 @@ int main(int argc, char* argv[])
   std::cout << "Waiting for STOPPING command" << std::endl;
   do
     {
-      std::this_thread::sleep_for(std::chrono::milliseconds(SLEEPTIME));
+      std::this_thread::sleep_for(std::chrono::milliseconds(SocketUtils::SLEEPTIME));
     } while ((command = SocketUtils::getData(serverSocket, SocketUtils::ENDOFMSG)).find("STOPPING") == std::string::npos);
   std::cout << "Received command: " << command << std::endl;
 
