@@ -1,73 +1,101 @@
 /*
-  c++ -o Server Server.cc -I $BOOST
+  c++ -std=c++11 -o Server Server.cc SocketUtils.cc -I $BOOST -L $BOOST/lib -lboost_serialization
 */
 
+#include <string>
+#include <sstream>
 #include <iostream>
 
-#include <boost/asio.hpp>
+#include "boost/archive/binary_oarchive.hpp"
+#include "boost/archive/binary_iarchive.hpp"
+#include "boost/serialization/vector.hpp"
 
-std::string getData (boost::asio::ip::tcp::socket& socket)
+#include "DataStructure.h"
+#include "SocketUtils.h"
+
+#define SLEEPTIME 5 // [s]
+
+template<typename T>
+void DeSerializer(const T& theStream, EventData::DataStructure& theData)
 {
-  boost::asio::streambuf buf;
-  boost::asio::read_until(socket, buf, "\n");
-  std::string data = boost::asio::buffer_cast<const char*>(buf.data());
-
-  return data;
-}
-
-void sendData(boost::asio::ip::tcp::socket& socket, const std::string& message)
-{
-  boost::asio::write(socket, boost::asio::buffer(message + "\n"));
+  std::istringstream theSerialized(std::string((char*)theStream.data(), theStream.size()));
+  boost::archive::binary_iarchive theArchive(theSerialized);
+  theArchive >> theData;
 }
 
 int main(int argc, char* argv[])
 {
-  boost::asio::io_service io_service;
+  std::string command;
 
-  // Listening for any new incomming connection
-  // at port 9999 with IPv4 protocol
-  boost::asio::ip::tcp::acceptor acceptor_server(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 9999));
-
-  // Creating socket object
-  boost::asio::ip::tcp::socket server_socket(io_service);
-
-  // waiting for connection
-  acceptor_server.accept(server_socket);
-
-  // Reading username
-  std::string u_name = getData(server_socket);
-  // Removing "\n" from the username
-  u_name.pop_back();
-
-  // Replying with default message to initiate chat
-  std::string response, reply;
-  reply = "Hello " + u_name + "!";
-  std::cout << "Server: " << reply << std::endl;
-  sendData(server_socket, reply);
-
-  while (true)
+  if (argc < 2)
     {
-    // Fetching response
-    response = getData(server_socket);
+      std::cout << "Parameter missing: ./Server port" << std::endl;
+      exit(EXIT_FAILURE);
+    }
 
-    // Popping last character "\n"
-    response.pop_back();
+  // ###################
+  // # Socket creation #
+  // ###################
+  boost::asio::io_service IOservice;
+  boost::asio::ip::tcp::acceptor acceptorServer(IOservice, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), atoi(argv[1])));
+  boost::asio::ip::tcp::socket serverSocket(IOservice);
 
-    // Validating if the connection has to be closed
-    if (response == "exit")
-      {
-        std::cout << u_name << " left!" << std::endl;
-        break;
-      }
-    std::cout << u_name << ": " << response << std::endl;
+  // ##########################
+  // # Waiting for connection #
+  // ##########################
+  std::cout << "Server is listening on port: " << argv[1] << std::endl;
+  acceptorServer.accept(serverSocket);
 
-    // Reading new message from input stream
-    std::cout << "Server" << ": ";
-    getline(std::cin, reply);
-    sendData(server_socket, reply);
+  std::this_thread::sleep_for(std::chrono::milliseconds(SLEEPTIME));
 
-    if (reply == "exit" ) break;
-  }
+  // ################################
+  // # Waiting for STARTING command #
+  // ################################
+  std::cout << "Waiting for STARTING command" << std::endl;
+  do
+    {
+      std::this_thread::sleep_for(std::chrono::milliseconds(SLEEPTIME));
+    } while ((command = SocketUtils::getData(serverSocket, SocketUtils::ENDOFMSG)).find("STARTING") == std::string::npos);
+  std::cout << "Received command: " << command << std::endl;
+
+  // #########################
+  // # Sending START command #
+  // #########################
+  std::cout << "Sending START command" << std::endl;
+  SocketUtils::sendData(serverSocket, "START", SocketUtils::ENDOFMSG);
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(SLEEPTIME));
+
+  // ####################
+  // # Waiting for DATA #
+  // ####################
+  EventData::DataStructure theData;
+  std::cout << "Waiting for DATA" << std::endl;
+  auto theStream = SocketUtils::getData(serverSocket, SocketUtils::ENDOFMSG);
+  std::cout << "=== Received DATA ===" << std::endl;
+  DeSerializer(theStream, theData);
+  std::cout << theData.data1 << std::endl;
+  std::cout << theData.data2 << std::endl;
+  std::cout << theData.subVec[0].subData1 << std::endl;
+  std::cout << theData.subVec[0].subData2 << std::endl;
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(SLEEPTIME));
+
+  // ################################
+  // # Waiting for STOPPING command #
+  // ################################
+  std::cout << "Waiting for STOPPING command" << std::endl;
+  do
+    {
+      std::this_thread::sleep_for(std::chrono::milliseconds(SLEEPTIME));
+    } while ((command = SocketUtils::getData(serverSocket, SocketUtils::ENDOFMSG)).find("STOPPING") == std::string::npos);
+  std::cout << "Received command: " << command << std::endl;
+
+  // ########################
+  // # Sending STOP command #
+  // ########################
+  std::cout << "Sending STOP command" << std::endl;
+  SocketUtils::sendData(serverSocket, "STOP", SocketUtils::ENDOFMSG);
 
   return 0;
 }
