@@ -25,9 +25,9 @@ int main(int argc, char* argv[])
 {
   std::string command;
 
-  if (argc < 2)
+  if (argc < 3)
     {
-      std::cout << "Parameter missing: ./Server port" << std::endl;
+      std::cout << "Parameter missing: ./Server server_address port" << std::endl;
       exit(EXIT_FAILURE);
     }
 
@@ -35,13 +35,14 @@ int main(int argc, char* argv[])
   // # Socket creation #
   // ###################
   boost::asio::io_service IOservice;
-  boost::asio::ip::tcp::acceptor acceptorServer(IOservice, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), atoi(argv[1])));
+  boost::asio::ip::tcp::acceptor acceptorServer(IOservice, boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(argv[1]), atoi(argv[2])));
+  // boost::asio::ip::tcp::acceptor acceptorServer(IOservice, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), atoi(argv[1])));
   boost::asio::ip::tcp::socket serverSocket(IOservice);
 
   // ##########################
   // # Waiting for connection #
   // ##########################
-  std::cout << "Server is listening on port: " << argv[1] << std::endl;
+  std::cout << "Server is listening on address:port = " << argv[1] << ":" << argv[2] << std::endl;
   acceptorServer.accept(serverSocket);
 
   std::this_thread::sleep_for(std::chrono::milliseconds(SocketUtils::SLEEPTIME));

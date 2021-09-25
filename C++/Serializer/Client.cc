@@ -13,7 +13,7 @@
 #include "DataStructure.h"
 #include "SocketUtils.h"
 
-void Serializer(const EventData::DataStructure theData, std::string& theStream)
+void Serializer(const EventData::DataStructure& theData, std::string& theStream)
 {
   std::ostringstream theSerialized;
   boost::archive::binary_oarchive theArchive(theSerialized);
