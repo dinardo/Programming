@@ -1,5 +1,5 @@
 /*
-  c++ -std=c++11 -o Server Server.cc SocketUtils.cc -I $BOOST -L $BOOST/lib -lboost_serialization
+  c++ -std=c++11 -o Server Server.cc SocketUtils.cc -I $BOOST_ROOT -L $BOOST_ROOT/lib -lboost_serialization
 */
 
 #include <string>
