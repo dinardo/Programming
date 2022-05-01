@@ -1,5 +1,5 @@
 ####################################
-# CmakeLists for sub-directory src #
+# CMakeLists for sub-directory src #
 ####################################
 
 add_executable(theServer Server.cc)
