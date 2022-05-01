@@ -1,8 +1,8 @@
 # Programming
 
-My programming snippets:
-- C++
-- Python
-- HTML5
+My programming snippets in:
+- **C++**
+- **Python**
+- *HTML5**
 
-Various documents about programming
+together with various documents on programming
