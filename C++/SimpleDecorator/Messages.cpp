@@ -36,7 +36,7 @@ struct MyMessage : public BaseMessage
 class BaseCalibration
 {
 public:
-  virtual void Start(int runNumbe, float parameter) = 0;
+  virtual void Start(int runNumber, float parameter) = 0;
   virtual int  Stop()                               = 0;
 
   template<typename M, typename FunType, typename ObjType, typename... Args>
@@ -55,7 +55,7 @@ public:
 class PixelAlive : public BaseCalibration
 {
 public:
-  void Start(int runNumbe, float parameter)
+  void Start(int runNumber, float parameter)
   {
     std::cout << __PRETTY_FUNCTION__ << std::endl;
     internal = 10;
@@ -117,7 +117,7 @@ protected:
 class PedeNoise : public BaseCalibration
 {
 public:
-  void Start(int runNumbe, float parameter)
+  void Start(int runNumber, float parameter)
   {
     std::cout << __PRETTY_FUNCTION__ << std::endl;
   }
