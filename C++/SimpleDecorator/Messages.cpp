@@ -37,7 +37,7 @@ class BaseCalibration
 {
 public:
   virtual void Start(int runNumber, float parameter) = 0;
-  virtual int  Stop()                               = 0;
+  virtual int  Stop()                                = 0;
 
   template<typename M, typename FunType, typename ObjType, typename... Args>
   void MsgDecorator(M& msg, FunType fun, ObjType& obj, Args... args)
@@ -71,7 +71,7 @@ public:
   template<typename M, typename FunType, typename ObjType, typename... Args>
   void MsgDecorator(M& msg, FunType fun, ObjType& obj, Args... args)
   {
-    std::cout << "Function type: " << typeid(fun).name() << " " << typeid(FunType).name() << std::endl;
+    std::cout << "Function type: " << typeid(fun).name() << std::endl;
 
     if (std::is_same<FunType, decltype(&ObjType::Start)>::value == true)
       {
