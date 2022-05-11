@@ -1,5 +1,10 @@
 /*
-c++ -std=c++11 -o Messages Messages.cpp
+ Simple example of application of decorators in C++
+
+ The use case is related to adding messages to member
+ function of an hypothetical detector calibration class
+
+ c++ -std=c++1z -o Messages Messages.cpp
 */
 
 #include <iostream>
@@ -43,8 +48,8 @@ public:
   void MsgDecorator(M& msg, FunType fun, ObjType& obj, Args... args)
   {
     std::cout << __PRETTY_FUNCTION__ << std::endl;
-    msg.output = "DEFAULT";
-    msg.val    = -10;
+    msg.output     = "DEFAULT";
+    msg.defaultVal = -10;
   }
 };
 
@@ -71,39 +76,37 @@ public:
   template<typename M, typename FunType, typename ObjType, typename... Args>
   void MsgDecorator(M& msg, FunType fun, ObjType& obj, Args... args)
   {
-    std::cout << "Function type: " << typeid(fun).name() << std::endl;
-
-    if (std::is_same<FunType, decltype(&ObjType::Start)>::value == true)
+    if constexpr (std::is_same<FunType, decltype(&ObjType::Start)>::value)
       {
         try
           {
             (obj.*fun)(args...);
             msg.val    = internal;
-            msg.output = "GOOD";
+            msg.output = "START: GOOD";
           }
         catch(...)
           {
             msg.val    = 0;
-            msg.output = "BAD";
+            msg.output = "START: BAD";
           }
       }
-    else if (std::is_same<FunType, decltype(&ObjType::Stop)>::value == true)
+    else if constexpr (std::is_same<FunType, decltype(&ObjType::Stop)>::value)
       {
         std::cout << "SPECIAL CASE" << std::endl;
 
         try
           {
-            // msg.defaultVal = (obj.*fun)(args...); // Not working
-            (obj.*fun)(args...);
-            msg.defaultVal = 1;
-            msg.output     = "STOP: GOOD";
+            msg.val    = (obj.*fun)(args...);
+            msg.output = "STOP: GOOD";
           }
         catch(...)
           {
-            msg.defaultVal = 0;
-            msg.output     = "STOP: BAD";
+            msg.val    = 0;
+            msg.output = "STOP: BAD";
           }
       }
+    else
+      std::cout << "Unrecognized member function: " << typeid(fun).name() << std::endl;
   }
 
 protected:
@@ -137,25 +140,26 @@ int main()
 {
   int   runNumber = 1;
   float parameter = 0;
-  MyMessage msg;;
 
 
+  MyMessage msg_pa = {"", "", 0, "", 0};
   PixelAlive pa;
-  std::cout << "PixelAlive" << std::endl;
-  pa.MsgDecorator(msg, &PixelAlive::Start, pa, runNumber, parameter);
-  std::cout << msg.output << " " << msg.val << " " << msg.defaultVal << std::endl;
+  std::cout << "\n=== PixelAlive ===" << std::endl;
+  pa.MsgDecorator(msg_pa, &PixelAlive::Start, pa, runNumber, parameter);
+  std::cout << msg_pa.output << " " << msg_pa.val << " " << msg_pa.defaultVal << std::endl;
 
-  pa.MsgDecorator(msg, &PixelAlive::Stop, pa);
-  std::cout << msg.output << " " << msg.val << " " << msg.defaultVal << std::endl;
+  pa.MsgDecorator(msg_pa, &PixelAlive::Stop, pa);
+  std::cout << msg_pa.output << " " << msg_pa.val << " " << msg_pa.defaultVal << std::endl;
 
 
+  BaseMessage msg_pn = {"", "", 0};
   PedeNoise pn;
-  std::cout << "\nPedeNoise" << std::endl;
-  pn.MsgDecorator(msg, &PedeNoise::Start, pn, runNumber, parameter);
-  std::cout << msg.output << " " << msg.val << " " << msg.defaultVal << std::endl;
+  std::cout << "\n=== PedeNoise ===" << std::endl;
+  pn.MsgDecorator(msg_pn, &PedeNoise::Start, pn, runNumber, parameter);
+  std::cout << msg_pn.output << " " << msg_pn.defaultVal << std::endl;
 
-  pn.MsgDecorator(msg, &PedeNoise::Stop, pn);
-  std::cout << msg.output << " " << msg.val << " " << msg.defaultVal << std::endl;
+  pn.MsgDecorator(msg_pn, &PedeNoise::Stop, pn);
+  std::cout << msg_pn.output << " " << msg_pn.defaultVal << std::endl;
 
 
   return 0;
