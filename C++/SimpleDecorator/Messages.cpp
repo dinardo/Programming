@@ -144,6 +144,7 @@ int main()
 
   MyMessage msg_pa = {"", "", 0, "", 0};
   PixelAlive pa;
+
   std::cout << "\n=== PixelAlive ===" << std::endl;
   pa.MsgDecorator(msg_pa, &PixelAlive::Start, pa, runNumber, parameter);
   std::cout << msg_pa.output << " " << msg_pa.val << " " << msg_pa.defaultVal << std::endl;
@@ -154,6 +155,7 @@ int main()
 
   BaseMessage msg_pn = {"", "", 0};
   PedeNoise pn;
+
   std::cout << "\n=== PedeNoise ===" << std::endl;
   pn.MsgDecorator(msg_pn, &PedeNoise::Start, pn, runNumber, parameter);
   std::cout << msg_pn.output << " " << msg_pn.defaultVal << std::endl;
