@@ -82,7 +82,7 @@ int main()
   // #################
   std::cout << "\nTesting commands:" << std::endl;
   std::vector<uint16_t> words;
-  Commands::serialize(Commands::WriteCmd(0, 2, 3, 31), words);
+  Commands::serialize(Commands::WriteCmd{0, 2, 3, 31}, words);
   Commands::serialize(Commands::SyncCmd(), words);
   for (auto& w : words)
     std::cout << "Word n = " << std::hex << w << std::dec << std::endl;

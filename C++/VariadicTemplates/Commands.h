@@ -60,6 +60,10 @@ namespace Commands
   protected:
     template <int... Sizes, class... Args>
     uint8_t packAndEncode(Args&&... args) const { return Commands::map5to8bit[bitWise::pack<Sizes...>(std::forward<Args>(args)...)]; }
+    // && allows to use reference of temporary
+    // in this specific case of template is good practice because we don't know what we are going to get ...
+    // forward either copy or move depending on the whtehr we have variables or temporarires
+    // look for perfedct forwarding
   };
 
   struct WriteCmd : public ComposeCommand<Commands::Write, 4>
