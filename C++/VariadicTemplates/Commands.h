@@ -55,7 +55,7 @@ namespace Commands
     static constexpr size_t nFields_ = nFields;
     static constexpr size_t theCmd_  = theCmd;
 
-    std::array<uint8_t, nFields_> serializeFields() const { return std::array<uint8_t, nFields_>(); }
+    auto serializeFields() const { return std::array<uint8_t, nFields_>(); }
 
   protected:
     template <int... Sizes, class... Args>
@@ -79,7 +79,7 @@ namespace Commands
     uint8_t data2;
     uint8_t address;
 
-    std::array<uint8_t, nFields_> serializeFields() const
+    auto serializeFields() const
     {
       std::array<uint8_t, nFields_> fields;
 
@@ -106,7 +106,7 @@ namespace Commands
   }
 
   template <typename cmdType>
-  std::vector<uint16_t> getFrames(const cmdType& cmd)
+  auto getFrames(const cmdType& cmd)
   {
     std::vector<uint16_t> words;
 

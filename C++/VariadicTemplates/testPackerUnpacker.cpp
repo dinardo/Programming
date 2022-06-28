@@ -1,5 +1,5 @@
 /*
-c++ -std=c++14 -o testPackerUnpacker testPackerUnpacker.cpp Commands.cpp
+c++ -std=c++14 -o testPackerUnpacker testPackerUnpacker.cpp
 */
 
 #include <iostream>
