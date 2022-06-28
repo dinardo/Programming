@@ -71,7 +71,7 @@ namespace Commands
     // template <typename T, typename Arg>
     // T create(const Arg& a) { return T(a); }
 
-    // template <typename T,typename Arg>
+    // template <typename T, typename Arg>
     // T create(Arg&& a) { return T(std::forward<Arg>(a)); }
 
     // int main()
