@@ -65,10 +65,10 @@ namespace Commands
     // std::forward either copy or move, depending on the whether we have variables or temporarires
     // Perfect forwarding: instead of these two classes, we can use std::forward
 
-    // template <typename T,typename Arg>
+    // template <typename T, typename Arg>
     // T create(Arg& a) { return T(a); }
 
-    // template <typename T,typename Arg>
+    // template <typename T, typename Arg>
     // T create(const Arg& a) { return T(a); }
 
     // template <typename T,typename Arg>
