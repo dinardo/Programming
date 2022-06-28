@@ -1,11 +1,12 @@
 /*
-c++ -std=c++14 -o testPackerUnpacker testPackerUnpacker.cpp
+c++ -std=c++14 -o testPackerUnpacker testPackerUnpacker.cpp Commands.cpp
 */
 
 #include <iostream>
 #include <vector>
 
 #include "PackerUnpacker.h"
+#include "Commands.h"
 
 
 int main()
@@ -74,6 +75,18 @@ int main()
       arrUnpacked[i] = arrUnpacked_[i].to_ulong();
       std::cout << "arrUnpacked[" << i << "] = 0x" << std::hex << +arrUnpacked[i] << std::dec << std::endl;
     }
+
+
+  // #################
+  // # Pack commands #
+  // #################
+  std::cout << "\nTesting commands:" << std::endl;
+  std::vector<uint16_t> words;
+  Commands::serialize(Commands::WriteCmd(0, 2, 3, 31), words);
+  Commands::serialize(Commands::SyncCmd(), words);
+  for (auto& w : words)
+    std::cout << "Word n = " << std::hex << w << std::dec << std::endl;
+
 
   return 0;
 }
