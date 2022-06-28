@@ -77,12 +77,12 @@ namespace Commands
     // int main()
     // {
     //   //L-value
-    //   int five=5;
-    //   int myFive= create<int>(five);
+    //   int five   = 5;
+    //   int myFive = create<int>(five);
     //   std::cout << "myFive: "  << myFive << std::endl;
     //   // R-value
-    //   int myFive2= create<int>(5);
-    //   std::cout << "myFive2: " << myFive2 << std::endl;
+    //   int myFive = create<int>(5);
+    //   std::cout << "myFive: " << myFive << std::endl;
     // }
   };
 
