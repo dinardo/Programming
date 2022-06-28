@@ -60,10 +60,30 @@ namespace Commands
   protected:
     template <int... Sizes, class... Args>
     uint8_t packAndEncode(Args&&... args) const { return Commands::map5to8bit[bitWise::pack<Sizes...>(std::forward<Args>(args)...)]; }
-    // && allows to use reference of temporary
-    // in this specific case of template is good practice because we don't know what we are going to get ...
-    // forward either copy or move depending on the whtehr we have variables or temporarires
-    // look for perfedct forwarding
+    // In general && allows to use a reference or a temporary
+    // In this specific case of template it is good practice because we don't know what we are going to get from the parameter pack
+    // std::forward either copy or move, depending on the whether we have variables or temporarires
+    // Perfect forwarding: instead of these two classes, we can use std::forward
+
+    // template <typename T,typename Arg>
+    // T create(Arg& a) { return T(a); }
+
+    // template <typename T,typename Arg>
+    // T create(const Arg& a) { return T(a); }
+
+    // template <typename T,typename Arg>
+    // T create(Arg&& a) { return T(std::forward<Arg>(a)); }
+
+    // int main()
+    // {
+    //   //L-value
+    //   int five=5;
+    //   int myFive= create<int>(five);
+    //   std::cout << "myFive: "  << myFive << std::endl;
+    //   // R-value
+    //   int myFive2= create<int>(5);
+    //   std::cout << "myFive2: " << myFive2 << std::endl;
+    // }
   };
 
   struct WriteCmd : public ComposeCommand<Commands::Write, 4>
