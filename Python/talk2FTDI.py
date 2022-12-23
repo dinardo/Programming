@@ -32,7 +32,7 @@ def queryProtections(device, voltProtect, currentProtect):
     sendANDreceive(device,'VOLTage:PROTection:CLEar')
     sendANDreceive(device,'CURRent:PROTection:CLEar')
 
-    sendANDreceive(device,'CURRent:PROTection:STATe 1')
+    sendANDreceive(device,'CURRent:PROTection:STATe ON')
 
     sendANDreceive(device,'VOLTage:PROTection ' + str(voltProtect))
     sendANDreceive(device,'CURRent:PROTection ' + str(currentProtect))
@@ -79,8 +79,23 @@ def FTDIstatus(device):
 
 def main():
     if len(sys.argv) < 2:
-        print('Synopsis:', sys.argv[0], '[DEVICE_NAME [ON/OFF/ADDR/FTDI]]')
+        print('Synopsis:', sys.argv[0], '[DEVICE_NAME [ON/OFF/ADDR/FTDI/CHN]]')
         sys.exit(1)
+
+    ######################
+    # Parse output state #
+    ######################
+    output = ''
+    if len(sys.argv) >= 3 and (sys.argv[2] == 'ON' or sys.argv[2] == 'on' or sys.argv[2] == 'OFF' or sys.argv[2] == 'off'):
+        output = sys.argv[2]
+
+
+    ########################
+    # Parse channel number #
+    ########################
+    chn = ''
+    if len(sys.argv) == 5 and (sys.argv[3] == 'CHN' or sys.argv[3] == 'chn'):
+        chn = sys.argv[4]
 
 
     ####################
@@ -93,49 +108,60 @@ def main():
     ####################
     # Sending commands #
     ####################
-    if len(sys.argv) == 3 and sys.argv[2].isdigit():
-        ########################
-        # To program FTDI chip #
-        ########################
-        print('--> Reprogramming FTDI to talk to GPIB adevice with address:', sys.argv[2], '<--')
-        sendANDreceive(device,'++addr ' + sys.argv[2])
+    if len(sys.argv) == 4 and (sys.argv[2] == 'ADDR' or sys.argv[2] == 'addr') and sys.argv[3].isdigit():
+        #############################
+        # To program FTDI chip:     #
+        # talk2FTDI device ADDR num #
+        #############################
+        print('--> Reprogramming FTDI to talk to GPIB adevice with address:', sys.argv[3], '<--')
+        sendANDreceive(device,'++addr ' + sys.argv[3])
 
     elif len(sys.argv) == 3 and (sys.argv[2] == 'FTDI' or sys.argv[2] == 'ftdi'):
-        #######################
-        # To read FTDI status #
-        #######################
+        #########################
+        # To read FTDI status:  #
+        # talk2FTDI device FTDI #
+        #########################
         print('--> FTDI status <--')
         FTDIstatus(device)
 
     else:
-        #################################
-        # To read/program device status #
-        #################################
+        #############################################
+        # To read/program device status             #
+        # talk2FTDI device [ON/OFF]->CHN n./nothing #
+        #############################################
         sendANDreceive(device,'*IDN?')
         sendANDreceive(device,'OUTPut:STATe?')
 
-        print('\n--> Channel #1')
-        sendANDreceive(device,'INSTrument:SELect OUT0')
-        sendANDreceive(device,'SOURce:CHANnel 1')
-        queryProtections(device, 1.9, 1.2)
-        setVoltage(device, 1.85)
+        if chn != '':
+            print('\n--> Channel #' + chn)
+            sendANDreceive(device,'INSTrument:SELect OUT' + chn)
+            sendANDreceive(device,'SOURce:CHANnel ' + chn)
+            queryProtections(device, 1.9, 2.0)
+            setVoltage(device, 1.70)
 
-        #rampUpVoltage(device, 1.5, 1.85, 0.1)
+        else:
+            print('\n--> Channel #1')
+            sendANDreceive(device,'INSTrument:SELect OUT0')
+            sendANDreceive(device,'SOURce:CHANnel 1')
+            queryProtections(device, 1.9, 2.0)
+            setVoltage(device, 1.70)
 
-        print('\n--> Channel #2')
-        sendANDreceive(device,'INSTrument:SELect OUT1')
-        sendANDreceive(device,'SOURce:CHANnel 2')
-        queryProtections(device, 1.9, 1.2)
-        setVoltage(device, 1.85)
+            #rampUpVoltage(device, 1.5, 1.85, 0.1)
 
-        print('\n--> Channel #3')
-        sendANDreceive(device,'INSTrument:SELect OUT2')
-        sendANDreceive(device,'SOURce:CHANnel 3')
-        queryProtections(device, 2.6, 0.6)
-        setVoltage(device, 2.5)
+            print('\n--> Channel #2')
+            sendANDreceive(device,'INSTrument:SELect OUT1')
+            sendANDreceive(device,'SOURce:CHANnel 2')
+            queryProtections(device, 1.9, 2.0)
+            setVoltage(device, 1.70)
 
-        if len(sys.argv) == 3:
-            sendANDreceive(device,'OUTPut:STATe ' + sys.argv[2])
+            print('\n--> Channel #3')
+            sendANDreceive(device,'INSTrument:SELect OUT2')
+            sendANDreceive(device,'SOURce:CHANnel 3')
+            queryProtections(device, 2.6, 0.6)
+            setVoltage(device, 2.5)
+
+        if output != '':
+            sendANDreceive(device,'OUTPut:STATe ' + output)
             sendANDreceive(device,'OUTPut:STATe?')
 
 
