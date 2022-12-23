@@ -10,7 +10,7 @@
 ###################################################################
 """
 
-import serial # --> needs pyserial
+import serial
 import sys
 
 
