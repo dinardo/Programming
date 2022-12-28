@@ -190,15 +190,16 @@ namespace bitWise
   }
 
 
-  // #################################
-  // # Unpack iterable into iterable #
-  // #################################
+  // ##################################
+  // # Unpack iterable into iterable  #
+  // # size must be >= sizeof(I-type) #
+  // ##################################
   template<size_t size, typename I, typename O>
   void unpackIterable2Iterable(I inFirst, I inLast, O outFirst)
   {
     constexpr auto inTypeSize = 8 * sizeof(typename std::iterator_traits<I>::value_type);
 
-    static_assert(inTypeSize > size, "[bitWise::unpackIterable2Iterable] The size of the input range's value type is too small");
+    static_assert(inTypeSize >= size, "[bitWise::unpackIterable2Iterable] The size of the input range's value type is too small");
 
     size_t excess = 0;
     while(inFirst != inLast)
