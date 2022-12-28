@@ -36,7 +36,7 @@ int main()
   std::cout << "output = 0x" << std::hex << output << std::dec << std::endl;
 
 
-  auto arr = bitWise::convertTuple2Array<uint8_t>(input);
+  auto arr = bitWise::unpackTuple2Array<uint8_t>(input);
   std::cout << "\nUnpacking in array: 0x" << std::hex << val << std::endl;
   std::cout << "a = 0x" << +arr[0] << std::endl;
   std::cout << "b = 0x" << +arr[1] << std::endl;
@@ -53,28 +53,25 @@ int main()
   std::cout << "c = 0x" << c << std::dec << std::endl;
 
 
-  std::cout << "\nUnpacking vector:" << std::endl;
-  const int nFields =  5;
-  const int nBits   =  5;
-  const int size    = 16;
-  std::vector<uint16_t> vec(nFields,0);
-  vec[0] = 0xa0;
-  vec[1] = 0xb1;
-  vec[2] = 0xc2;
-  vec[3] = 0xd3;
-  vec[4] = 0xe4;
-  vec[5] = 0xf5;
-  std::bitset<size*nFields>bits(0);
-  for (auto i = 0u; i < nFields; i ++)
-    bits |= (static_cast<std::bitset<size*nFields>>(vec[i]) << (size*i));
-  auto unpacked = bitWise::unpackSequence<size,nBits>(bits);
-  auto arrUnpacked_ = bitWise::convertTuple2Array<std::bitset<size*nFields>>(unpacked);
-  uint8_t arrUnpacked[size];
-  for (auto i = 0u; i < size; i++)
-    {
-      arrUnpacked[i] = arrUnpacked_[i].to_ulong();
-      std::cout << "arrUnpacked[" << i << "] = 0x" << std::hex << +arrUnpacked[i] << std::dec << std::endl;
-    }
+  std::cout << "\nUnpacking iterable into another iterable:" << std::endl;
+  const int nValsIn  =  6;
+  const int sizeIn   = 16;
+  std::array<uint16_t, nValsIn> inArray;
+
+  const int sizeOut  =  5;
+  const int nValsOut = sizeIn * nValsIn / sizeOut + ((sizeIn * nValsIn) % sizeOut != 0 ? 1 : 0);
+  std::array<uint8_t, nValsOut> outArray;
+
+  inArray[0] = 0xa06c;
+  inArray[1] = 0xb17d;
+  inArray[2] = 0xc28e;
+  inArray[3] = 0xd39f;
+  inArray[4] = 0xe4a0;
+  inArray[5] = 0xf5b1;
+
+  bitWise::unpackIterable2Iterable<sizeOut>(inArray.begin(), inArray.end(), outArray.begin());
+  for (auto i = 0u; i < nValsOut; i++)
+    std::cout << "output iterable[" << i << "] = 0x" << std::hex << +outArray[i] << std::dec << std::endl;
 
 
   // #################

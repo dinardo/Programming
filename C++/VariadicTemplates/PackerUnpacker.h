@@ -157,9 +157,9 @@ namespace bitWise
   }
 
 
-  // ############################
-  // # Convert tuple into array #
-  // ############################
+  // ###########################
+  // # Unpack tuple into array #
+  // ###########################
   template<typename T>
   auto tupleUnpacker(size_t indx, const T& arg)
   {
@@ -175,7 +175,7 @@ namespace bitWise
   }
 
   template<typename Arr, typename Tup, size_t... Is>
-  auto convertTuple2Array(const Tup& arg, std::index_sequence<Is...>)
+  auto unpackTuple2Array(const Tup& arg, std::index_sequence<Is...>)
   {
     std::array<Arr, sizeof...(Is)> arr;
     for (size_t i = 0; i < arr.size(); i++)
@@ -184,10 +184,61 @@ namespace bitWise
   }
 
   template<typename Arr, typename Tup>
-  auto convertTuple2Array(const Tup& arg)
+  auto unpackTuple2Array(const Tup& arg)
   {
-    return convertTuple2Array<Arr>(arg, std::make_index_sequence<std::tuple_size<Tup>::value>());
+    return unpackTuple2Array<Arr>(arg, std::make_index_sequence<std::tuple_size<Tup>::value>());
   }
+
+
+  // #################################
+  // # Unpack iterable into iterable #
+  // #################################
+  template<size_t size, typename I, typename O>
+  void unpackIterable2Iterable(I inFirst, I inLast, O outFirst)
+  {
+    constexpr auto inTypeSize = 8 * sizeof(typename std::iterator_traits<I>::value_type);
+
+    static_assert(inTypeSize > size, "[bitWise::unpackIterable2Iterable] The size of the input range's value type is too small");
+
+    size_t excess = 0;
+    while(inFirst != inLast)
+      {
+        // ############
+        // # Standard #
+        // ############
+        auto mask = (1 << size) - 1;
+        for(auto i = 0u; i < (inTypeSize - excess) / size; i++)
+          {
+            *outFirst = (*inFirst >> ((size * i) + excess)) & mask;
+            outFirst++;
+          }
+
+        auto remainder = (inTypeSize - excess) % size;
+        if(remainder != 0)
+          {
+            // #############
+            // # Remainder #
+            // #############
+            mask = (1 << remainder) - 1;
+            *outFirst = (*inFirst >> (inTypeSize - remainder)) & mask;
+            inFirst++;
+
+            // ##########
+            // # Excess #
+            // ##########
+            excess = size - remainder;
+            mask = (1 << excess) - 1;
+            *outFirst |= (*inFirst & mask) << remainder;
+            outFirst++;
+          }
+        else
+          {
+            excess = 0;
+            inFirst++;
+          }
+      }
+  }
+
 }
 
 #endif
