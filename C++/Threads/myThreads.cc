@@ -7,6 +7,7 @@ clang++  -ansi -pedantic -Wall -Wextra -m64 -O3 --std=c++11 -o myThreads myThrea
 #include <random>
 #include <deque>
 #include <thread>
+#include <future>
 #include <mutex>
 
 
@@ -26,8 +27,13 @@ typedef struct
   int myID;
 } consumerData;
 
+void ThrowException()
+{
+  throw "Testig failure mode";
+}
 
-void Producer (producerData myArgs)
+
+void Producer (producerData myArgs, std::promise<void>& prom)
 {
   std::default_random_engine gen;
   std::uniform_int_distribution<int> niform(0.5*microSec,1.5*microSec);
@@ -51,6 +57,19 @@ void Producer (producerData myArgs)
   myMutex.unlock();
 
   std::cout << "Producer " << myArgs.myID << " is done" << std::endl;
+
+  // ########################
+  // # Testing failure mode #
+  // ########################
+  try
+    {
+      ThrowException();
+      prom.set_value();
+    }
+  catch (...)
+    {
+      prom.set_exception(std::current_exception());
+    }
 }
 
 
@@ -66,7 +85,7 @@ void Consumer (consumerData myArgs)
 
   while (val.first != endOfProcess)
     {
-      usleep(niform(gen));
+      std::this_thread::sleep_for(std::chrono::microseconds(niform(gen)));
 
       popped = false;
       myMutex.lock();
@@ -87,23 +106,52 @@ void Consumer (consumerData myArgs)
 
 int main ()
 {
+  std::promise<void> prom1;
+  std::promise<void> prom2;
+
   unsigned int howMany = 10;
   producerData pData;
   consumerData cData;
 
   pData.myID    = 1;
   pData.howMany = howMany;
-  std::thread thrProducer1(Producer, pData);
+  std::thread thrProducer1(Producer, pData, std::ref(prom1));
 
   cData.myID = 1;
   std::thread thrConsumer1(Consumer, cData);
 
   pData.myID    = 2;
   pData.howMany = howMany;
-  std::thread thrProducer2(Producer, pData);
+  std::thread thrProducer2(Producer, pData, std::ref(prom2));
 
   cData.myID = 2;
   std::thread thrConsumer2(Consumer, cData);
+
+
+  // ########################
+  // # Testing failure mode #
+  // ########################
+  std::future<void> fu1 = prom1.get_future();
+  try
+    {
+      fu1.get();
+      std::cout << "Completed successfully\n";
+    }
+  catch (const char *msg)
+    {
+      std::cerr << "Exception: " << msg << "\n";
+    }
+
+  std::future<void> fu2 = prom2.get_future();
+  try
+    {
+      fu2.get();
+      std::cout << "Completed successfully\n";
+    }
+  catch (const char *msg)
+    {
+      std::cerr << "Exception: " << msg << "\n";
+    }
 
 
   thrProducer1.join();
