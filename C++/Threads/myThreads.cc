@@ -103,10 +103,32 @@ std::condition_variable_any wakeUp;
 std::recursive_mutex        theMtx;
 
 
+bool getRunningStatus(std::future<void>& theFuture)
+{
+  const uint16_t time = 500;
+  auto runningStatus = theFuture.wait_for(std::chrono::milliseconds(time));
+
+  if (runningStatus == std::future_status::ready || runningStatus == std::future_status::deferred)
+    {
+      try
+        {
+          if(theFuture.valid() == true) theFuture.get();
+          return true;
+        }
+      catch(std::runtime_error& e)
+        {
+          throw std::runtime_error(e.what());
+        }
+    }
+  else
+    return false;
+}
+
+
 void waitForCompletion()
 {
   std::unique_lock<std::recursive_mutex> theGuard(theMtx);
-  wakeUp.wait(theGuard, []() { return doExit; });
+  wakeUp.wait(theGuard, []() {return doExit; });
 }
 
 
@@ -216,7 +238,8 @@ int main ()
   Stop(thrStart);
   try
     {
-      future.get();
+      bool status = getRunningStatus(future);
+      std::cout << "Running status: " << status << std::endl;
     }
   catch(std::runtime_error& e)
     {
