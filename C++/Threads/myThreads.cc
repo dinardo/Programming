@@ -132,8 +132,6 @@ void Start(float& parameter)
       throw std::runtime_error("Testig failure mode: while Starting");
     }
 
-  informImDone();
-
   throw std::runtime_error("Testig failure mode: end of Start");
 }
 
@@ -155,6 +153,7 @@ void wrapperStart(float& parameter, std::promise<void>&& promise)
   try
     {
       Start(parameter);
+      informImDone();
       promise.set_value();
     }
   catch (...)
