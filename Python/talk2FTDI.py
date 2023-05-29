@@ -5,6 +5,7 @@
 # To know to which port is connected the FTDI device run (linux): #
 # > dmesg                                                         #
 # To add user to dialout group: sudo usermod -a -G dialout <user> #
+# To install -serial-: pip install pyserial                       #
 #                                                                 #
 # By Mauro Dinardo                                                #
 ###################################################################
