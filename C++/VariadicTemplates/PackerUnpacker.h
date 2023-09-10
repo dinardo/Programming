@@ -240,6 +240,30 @@ namespace bitWise
       }
   }
 
+  // ####################################
+  // # Serialize an array of N elements #
+  // # allowing S-bits for each element #
+  // # into a TT-type variable          #
+  // ####################################
+  template <typename T, size_t N, size_t S, typename TT, size_t... Is, typename... Args>
+  TT serializeElements(Args... args)
+  {
+    TT                           result = 0;
+    __attribute__((unused)) auto unused = {result |= args << (S * Is)...};
+    return result;
+  }
+
+  template <typename T, size_t N, size_t S, typename TT, size_t... Is>
+  TT processUnfoldedArray(const std::array<T, N>& arr, std::index_sequence<Is...>)
+  {
+    return serializeElements<T, N, S, TT, Is...>(arr[Is]...);
+  }
+
+  template <typename T, size_t N, size_t S, typename TT>
+  TT serializeArray(const std::array<T, N>& arr)
+  {
+    return processUnfoldedArray<T, N, S, TT>(arr, std::make_index_sequence<N>{});
+  }
 }
 
 #endif

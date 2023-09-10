@@ -74,6 +74,11 @@ int main()
     std::cout << "output iterable[" << i << "] = 0x" << std::hex << +outArray[i] << std::dec << std::endl;
 
 
+  const int sizeArray = 4;
+  std::array<bool, sizeArray> theArray = {false, true, true, false};
+  std::cout << "\nSerialzed array: " << std::hex << bitWise::serializeArray<bool, sizeArray, 1, uint16_t>(theArray) << std::dec << std::endl;
+
+
   // #################
   // # Pack commands #
   // #################
