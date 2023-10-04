@@ -37,19 +37,19 @@ def queryProtections(device, voltProtect, currentProtect):
 
     sendANDreceive(device,'VOLTage:PROTection ' + str(voltProtect))
     sendANDreceive(device,'CURRent:PROTection ' + str(currentProtect))
-    sendANDreceive(device,'CURRent ' + str(currentProtect))
 
     sendANDreceive(device,'VOLTage:PROTection?')
     sendANDreceive(device,'CURRent:PROTection?')
 
+def measureVandI(device):
     sendANDreceive(device,'MEASure:VOLTage?')
     sendANDreceive(device,'MEASure:CURRent?')
 
 def setVoltage(device, voltage):
     sendANDreceive(device,'VOLTage ' + str(voltage))
-    sendANDreceive(device,'MEASure:VOLTage?')
-    sendANDreceive(device,'MEASure:CURRent?')
 
+def setCurrent(device, current):
+    sendANDreceive(device,'CURRent ' + str(current))
 
 def rampUpVoltage(device, start, stop, step):
     print('\n--> Ramping up voltage: from', start, 'to', stop, 'in step of', step, 'V')
@@ -62,7 +62,7 @@ def rampUpVoltage(device, start, stop, step):
         if volt > stop:
             break
         print('Volatge -->', volt)
-        #sendANDreceive(device,'VOLTage Up')
+#sendANDreceive(device,'VOLTage Up')
         sendANDreceive(device,'VOLTage ' + str(volt))
 
 
@@ -137,8 +137,10 @@ def main():
             print('\n--> Channel #' + chn)
             sendANDreceive(device,'INSTrument:SELect OUT' + chn)
             sendANDreceive(device,'SOURce:CHANnel ' + chn)
-            queryProtections(device, 1.9, 2.0)
-            setVoltage(device, 1.70)
+            queryProtections(device, 2.2, 5.0)
+            setCurrent(device, 4.0)
+#            setVoltage(device, 1.78)
+            measureVandI(device)
 
         else:
             print('\n--> Channel #1')
@@ -146,6 +148,7 @@ def main():
             sendANDreceive(device,'SOURce:CHANnel 1')
             queryProtections(device, 1.9, 2.0)
             setVoltage(device, 1.70)
+            measureVandI(device)
 
             #rampUpVoltage(device, 1.5, 1.85, 0.1)
 
@@ -154,16 +157,19 @@ def main():
             sendANDreceive(device,'SOURce:CHANnel 2')
             queryProtections(device, 1.9, 2.0)
             setVoltage(device, 1.70)
+            measureVandI(device)
 
             print('\n--> Channel #3')
             sendANDreceive(device,'INSTrument:SELect OUT2')
             sendANDreceive(device,'SOURce:CHANnel 3')
             queryProtections(device, 2.6, 0.6)
             setVoltage(device, 2.5)
+            measureVandI(device)
 
         if output != '':
             sendANDreceive(device,'OUTPut:STATe ' + output)
             sendANDreceive(device,'OUTPut:STATe?')
+            measureVandI(device)
 
 
 if __name__ == '__main__':
