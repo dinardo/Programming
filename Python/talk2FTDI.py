@@ -137,39 +137,39 @@ def main():
             print('\n--> Channel #' + chn)
             sendANDreceive(device,'INSTrument:SELect OUT' + chn)
             sendANDreceive(device,'SOURce:CHANnel ' + chn)
-            queryProtections(device, 2.2, 5.0)
+            queryProtections(device, 2.1, 5.0)
             setCurrent(device, 4.0)
-#            setVoltage(device, 1.78)
-            measureVandI(device)
+            setVoltage(device, 1.785)
 
-        else:
-            print('\n--> Channel #1')
-            sendANDreceive(device,'INSTrument:SELect OUT0')
-            sendANDreceive(device,'SOURce:CHANnel 1')
-            queryProtections(device, 1.9, 2.0)
-            setVoltage(device, 1.70)
-            measureVandI(device)
-
-            #rampUpVoltage(device, 1.5, 1.85, 0.1)
-
-            print('\n--> Channel #2')
-            sendANDreceive(device,'INSTrument:SELect OUT1')
-            sendANDreceive(device,'SOURce:CHANnel 2')
-            queryProtections(device, 1.9, 2.0)
-            setVoltage(device, 1.70)
-            measureVandI(device)
-
-            print('\n--> Channel #3')
-            sendANDreceive(device,'INSTrument:SELect OUT2')
-            sendANDreceive(device,'SOURce:CHANnel 3')
-            queryProtections(device, 2.6, 0.6)
-            setVoltage(device, 2.5)
-            measureVandI(device)
+#        else:
+#            print('\n--> Channel #1')
+#            sendANDreceive(device,'INSTrument:SELect OUT0')
+#            sendANDreceive(device,'SOURce:CHANnel 1')
+#            queryProtections(device, 1.9, 2.0)
+#            setVoltage(device, 1.70)
+#            measureVandI(device)
+#
+#            #rampUpVoltage(device, 1.5, 1.85, 0.1)
+#
+#            print('\n--> Channel #2')
+#            sendANDreceive(device,'INSTrument:SELect OUT1')
+#            sendANDreceive(device,'SOURce:CHANnel 2')
+#            queryProtections(device, 1.9, 2.0)
+#            setVoltage(device, 1.70)
+#            measureVandI(device)
+#
+#            print('\n--> Channel #3')
+#            sendANDreceive(device,'INSTrument:SELect OUT2')
+#            sendANDreceive(device,'SOURce:CHANnel 3')
+#            queryProtections(device, 2.6, 0.6)
+#            setVoltage(device, 2.5)
+#            measureVandI(device)
 
         if output != '':
             sendANDreceive(device,'OUTPut:STATe ' + output)
             sendANDreceive(device,'OUTPut:STATe?')
-            measureVandI(device)
+
+        measureVandI(device)
 
 
 if __name__ == '__main__':
