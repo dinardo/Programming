@@ -1,10 +1,10 @@
-from PIL import Image
+from pillow import Image
 import numpy as np
 
-NCOLS     = 400
-NROWS     = 192
+NCOLS     = 432
+NROWS     = 336
 NROW_CORE =   8
-HITPERCOL =   1
+HITPERCOL =  42
 
 def makeFrame(groupNumber,array):
     for col in range(NCOLS):
