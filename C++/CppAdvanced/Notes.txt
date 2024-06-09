@@ -1,0 +1,132 @@
+// #######################################################
+// # C++ Advanced course by Peter Sommerlad              #
+// # https://github.com/PeterSommerlad/CPPCourseAdvanced #
+// #######################################################
+
+// # Main arguments:
+// # - Error handling: std::variant, std::optional
+// # - Function template and std::concepts
+// # - Variadic templates, recursion and how to avoid recursion (folded expression, lambdas)
+// # - Class types: value, relation, manager (scope, unique, general)
+// # - Class template: tempalte specialization, template guide lines
+
+
+In C++ is better not to ever use pointers
+
+Every time you define a variable with auto is better to initialize it:
+auto int i{0};
+
+When you use a return, do not pass a const to allow the compiler optimization
+Unless there are serios memory issues, is better to pass by value (an let the compiler do the optimization)
+
+constexpr a function that is used at compile time (if possible)
+
+Lambda functions with capture are not idential to standard functions, therefore we need to use std::function<> to generalize the function type passed as parameter
+
+POSIX: The Portable Operating System Interface (POSIX) is a family of standards specified by the IEEE Computer Society for maintaining compatibility between operating systems
+
+Use noexcept:
+void funName(bla bla bla) noexcept
+{
+...
+}
+To avoid a function to throw exceptions
+
+Template defined in header file are implicitly inlined
+
+Suffix "s" to convert a literal to an std::string
+
+std::concept are used for SFINAE
+
+Functions are "first class objects" == which means that they are equal to a class and they can be passed by reference to a function (in C only by pointers)
+
+Initialization with {} or ():
+1. () can be misinterpreted with a function
+2. compiler prioritize list constructor, therefore if you have an overloaded constructor and one of them uses an initilizer list, then you might not be able to call the other constructor that uses just ()
+e.g. std::vector<int> a{20, 0};
+I would like to initialize 20 elements to zero, but in this case the compiler will create a vector with two elements: 20, 0
+
+std::move actually prepare for move --> if assigned to && then the transfer of ownership will occur, otherwise it won't
+
+RAII: Resource Acquisition Is Initialization
+
+When define a binary operator is better to define it as a member function friend (aka hidden friend) if you have implicit converion
+e.g. complex r = 5 + complex_number; // Won't work
+
+
+##################################################
+# Cpp Object Models (categories of types)        #
+# Presentation: "What classes we design and how" #
+# https://www.youtube.com/watch?v=LDiLF33j8UA    #
+##################################################
+
+- Value (or "value semantics")
+
+- Relation (use of reference, pointer, raw pointer)
+
+- Manager
+
+  - Scope
+    Non-copyable, non-movable
+    Can be returned from factory functions (C++17)
+
+    struct Scoped
+    {
+        [[nodiscard]] Scoped();  // Acquire resource
+                      ~Scoped(); // release resource
+                      Scoped& operator=(Scoped &&other) = delete;
+
+        private:
+            Resource resource; // Only one
+    };
+
+  - Unique
+    Move-only, transfer of ownership
+    Resource can not be easily duplicated
+
+    class Unique
+    {
+        std::optional<Resource> resource;
+        void release() noexcept;
+
+        public:
+                          Unique() = default;
+            [[nodiscard]] Unique(Params p); // Acquire resource ~Unique() noexcept;
+                          Unique& operator=(Unique &&other) & noexcept;
+                          Unique(Unique &&other) noexcept;
+    };
+
+  - General
+    Copyable, Move-operation for optimization
+    Resource can be duplicated
+
+    struct General
+    {
+        General() = default;
+        ~General();
+
+        General (const General &other);
+        General& operator= (const General &other) &;
+
+        General (General &&other) noexcept; // Optional optimization
+        General& operator= (General &&other) & noexcept; // Optional optimization
+    };
+
+std::string_view: since C++14 to handle sequence of char --> but better use std::string which have View semantics
+
+In C++ do NOT use the heap
+   std::unique_ptr<T> is a Menager type to be preferred if you REALLY need to use the heap
+   To change the stack size in Linux: uname -s number
+
+If you need to handle C array (int a[3]{1,2,3};) use std::span<int> which converts it to std::span automatically deducing the size at compile time
+
+Within <...> we could either use typename or class keywords, they are equivalent
+
+When you have single argument constructor and a constructor with initialization list is good define the "explicit" the constructor with initialization list
+To access something in the global namespace: ::name(...); The two colons allows you to refer to the global name space
+
+
+Categories of types
+2022
+
+what classes we design and how
