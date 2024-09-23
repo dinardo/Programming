@@ -6,22 +6,22 @@
 // # Main arguments:
 // # - Error handling: std::variant, std::optional
 // # - Function template and std::concepts
-// # - Variadic templates, recursion and how to avoid recursion (folded expression, lambdas)
+// # - Variadic templates, recursion, and how to avoid recursion (folded expression, lambdas)
 // # - Class types: value, relation, manager (scope, unique, general)
-// # - Class template: tempalte specialization, template guide lines
+// # - Class template: template specialization, template guidelines
 
 
-In C++ is better not to ever use pointers
+In C++ is better not ever to use pointers
 
 Every time you define a variable with auto is better to initialize it:
 auto int i{0};
 
 When you use a return, do not pass a const to allow the compiler optimization
-Unless there are serios memory issues, is better to pass by value (an let the compiler do the optimization)
+Unless there are serious memory issues, is better to pass by value (an let the compiler do the optimization)
 
 constexpr a function that is used at compile time (if possible)
 
-Lambda functions with capture are not idential to standard functions, therefore we need to use std::function<> to generalize the function type passed as parameter
+Lambda functions with capture are not identical to standard functions, therefore we need to use std::function<> to generalize the function type passed as a parameter
 
 POSIX: The Portable Operating System Interface (POSIX) is a family of standards specified by the IEEE Computer Society for maintaining compatibility between operating systems
 
@@ -42,15 +42,15 @@ Functions are "first class objects" == which means that they are equal to a clas
 
 Initialization with {} or ():
 1. () can be misinterpreted with a function
-2. compiler prioritize list constructor, therefore if you have an overloaded constructor and one of them uses an initilizer list, then you might not be able to call the other constructor that uses just ()
+2. compiler prioritizes list constructor, therefore if you have an overloaded constructor and one of them uses an initializer list, then you might not be able to call the other constructor that uses just ()
 e.g. std::vector<int> a{20, 0};
-I would like to initialize 20 elements to zero, but in this case the compiler will create a vector with two elements: 20, 0
+I would like to initialize 20 elements to zero, but in this case, the compiler will create a vector with two elements: 20, 0
 
-std::move actually prepare for move --> if assigned to && then the transfer of ownership will occur, otherwise it won't
+std::move actually prepare for move --> if assigned to && then the transfer of ownership will occur, otherwise, it won't
 
 RAII: Resource Acquisition Is Initialization
 
-When define a binary operator is better to define it as a member function friend (aka hidden friend) if you have implicit converion
+When defining a binary operator, it is better to define it as a member function friend (aka hidden friend) if you have implicit conversion
 e.g. complex r = 5 + complex_number; // Won't work
 
 
@@ -115,18 +115,12 @@ e.g. complex r = 5 + complex_number; // Won't work
 std::string_view: since C++14 to handle sequence of char --> but better use std::string which have View semantics
 
 In C++ do NOT use the heap
-   std::unique_ptr<T> is a Menager type to be preferred if you REALLY need to use the heap
+   std::unique_ptr<T> is a Manager type to be preferred if you REALLY need to use the heap
    To change the stack size in Linux: uname -s number
 
 If you need to handle C array (int a[3]{1,2,3};) use std::span<int> which converts it to std::span automatically deducing the size at compile time
 
 Within <...> we could either use typename or class keywords, they are equivalent
 
-When you have single argument constructor and a constructor with initialization list is good define the "explicit" the constructor with initialization list
-To access something in the global namespace: ::name(...); The two colons allows you to refer to the global name space
-
-
-Categories of types
-2022
-
-what classes we design and how
+When you have a single argument constructor and a constructor with an initialization list, it is good to define the "explicit" constructor with an initialization list
+To access something in the global namespace: ::name(...); The two colons allow you to refer to the global namespace
