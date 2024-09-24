@@ -16,16 +16,16 @@ struct dynArray: std::vector<T>
 
   decltype(auto) operator[](int i) &
   {
-    return this->at(computeIndex(i));
+    return std::vector<T>::at(computeIndex(i));
   }
 
   decltype(auto) operator[](int i) const &
   {
-    return this->at(computeIndex(i));
+    return std::vector<T>::at(computeIndex(i));
   }
 
 private:
-  size_t computeIndex(int i)
+  int computeIndex(int i)
   {
     return (i < 0 ? this->size() + i : i);
   }

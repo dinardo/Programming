@@ -30,7 +30,7 @@ void funName(bla bla bla) noexcept
 {
 ...
 }
-To avoid a function to throw exceptions
+To avoid a function to throw exceptions (typically used with operators to be used by standard library)
 
 Template defined in header file are implicitly inlined
 
@@ -47,6 +47,7 @@ e.g. std::vector<int> a{20, 0};
 I would like to initialize 20 elements to zero, but in this case, the compiler will create a vector with two elements: 20, 0
 
 std::move actually prepare for move --> if assigned to && then the transfer of ownership will occur, otherwise, it won't
+It make sense only for types that can have the "empty" state
 
 RAII: Resource Acquisition Is Initialization
 
@@ -61,6 +62,8 @@ e.g. complex r = 5 + complex_number; // Won't work
 ##################################################
 
 - Value (or "value semantics")
+
+- Subject (actual variable containing the value)
 
 - Relation (use of reference, pointer, raw pointer)
 
@@ -124,3 +127,7 @@ Within <...> we could either use typename or class keywords, they are equivalent
 
 When you have a single argument constructor and a constructor with an initialization list, it is good to define the "explicit" constructor with an initialization list
 To access something in the global namespace: ::name(...); The two colons allow you to refer to the global namespace
+
+DesDeMovA works because we declare a move assignment operator, even if it is then defined as deleted
+
+Iterator traits are deprecated, not for example std::iter_value_t
