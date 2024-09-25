@@ -1,0 +1,15 @@
+// #####################################################
+// # C++ Expert course by Peter Sommerlad              #
+// # https://github.com/PeterSommerlad/CPPCourseExpert #
+// #####################################################
+
+// # Main arguments:
+// # - To learn more about "Modules" look for Daniela Engert videos
+// # - To learn more about how the actual code is genated by the compiler: https://cppinsights.io
+
+Slice problem:
+1. Occurs when you have a base class with virtual member functions
+2. In order to get dynamic polymorphism typically you need to pass the base class object by reference
+3. If in case, by mistake, you allow to pass the base class by value, and the base class is copiable,
+   then you'll get only the copy of the base class members, and not those of the derived class.
+   Therefore, to avoid this problem, you need to make the base class non-copiable
