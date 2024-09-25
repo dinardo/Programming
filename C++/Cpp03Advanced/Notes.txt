@@ -30,7 +30,7 @@ void funName(bla bla bla) noexcept
 {
 ...
 }
-To avoid a function to throw exceptions (typically used with operators to be used by standard library)
+To avoid a function to throw exceptions (typically used with operators that are used by Standard Library)
 
 Template defined in header file are implicitly inlined
 
