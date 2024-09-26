@@ -6,6 +6,10 @@
 // # Main arguments:
 // # - To learn more about "Modules" look for Daniela Engert videos
 // # - To learn more about how the actual code is genated by the compiler: https://cppinsights.io
+// # - Talk by Andreas Weis on Allocators:
+// #   - https://accu.org/video/spring-2019-day-3/weis/
+// #   - https://accu.org/conf-docs/PDFs_2019/andreas_weis_-_taming_dynamic_memory__an_introduction_to_custom_allocators.pdf
+// #   - https://youtu.be/IGtKstxNe14?feature=shared
 
 Slice problem:
 1. Occurs when you have a base class with virtual member functions

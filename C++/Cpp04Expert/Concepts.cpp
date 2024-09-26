@@ -1,3 +1,7 @@
+/*
+  c++ -std=c++2b -Wall -Werror -Wextra -fsanitize=undefined,address -o Concepts Concepts.cpp
+*/
+
 // ################################
 // # Variable template for traits #
 // ################################
