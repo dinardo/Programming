@@ -1,5 +1,9 @@
-#ifndef BOUNDEDQUEUE_H_
-#define BOUNDEDQUEUE_H_
+/*
+  c++ -std=c++2b -Wall -Werror -Wextra -fsanitize=undefined,address -o BoundedQueue BoundedQueue.cpp
+*/
+
+#ifndef BOUNDEDQUEUE_H
+#define BOUNDEDQUEUE_H
 
 #include "BoundedBufferRawMemory.h"
 
@@ -170,3 +174,9 @@ private:
 };
 
 #endif
+
+int main()
+{
+  BoundedQueue<int> bq{10};
+  return 0;
+}
