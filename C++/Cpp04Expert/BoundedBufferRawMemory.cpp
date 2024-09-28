@@ -7,8 +7,9 @@
 
 #include <memory>
 #include <algorithm>
+#include <stdexcept>
 
-namespace heap_memory
+namespace raw_memory
 {
   template<typename T>
   struct BoundedBuffer
@@ -37,7 +38,7 @@ namespace heap_memory
       destroyAllElements();
       if (theSize != from.theSize)
         {
-          theSize = other.theSize;
+          theSize = from.theSize;
           theQueue = std::make_unique<std::byte[]>(sizeof(T) * theSize);
         }
       appendElements(from);
@@ -127,7 +128,7 @@ namespace heap_memory
     }
 
     template<typename ...Ts>
-    void push_emplace(Params&& ...Args) &
+    void push_emplace(Ts&& ...Args) &
     {
       if (full())
         throw std::logic_error{"Buffer full"};
@@ -188,6 +189,6 @@ namespace heap_memory
 
 int main()
 {
-  BoundedBuffer<int> buff{10};
+  raw_memory::BoundedBuffer<int> buff{10};
   return 0;
 }

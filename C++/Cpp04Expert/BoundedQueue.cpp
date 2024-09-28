@@ -7,12 +7,12 @@
 
 #include "BoundedBufferRawMemory.h"
 
-#include <chrono>
 #include <condition_variable>
+#include <chrono>
 #include <mutex>
 #include <utility>
 
-using heap_non_default::BoundedBuffer;
+using raw_memory::BoundedBuffer;
 
 //TODO: Add template signature
 template<typename T, typename MUTEX=std::mutex, typename CONDVAR=std::condition_variable>

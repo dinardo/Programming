@@ -31,7 +31,7 @@ struct DynArray: std::vector<T>
   // refer to the internal variable
   decltype(auto) operator[](this auto& self, int i)
   {
-    return self.base::at(computeIndex(i));
+    return self.base::at(self.computeIndex(i));
   }
 
   decltype(auto) at(int i) &

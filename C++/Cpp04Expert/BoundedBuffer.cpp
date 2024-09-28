@@ -6,6 +6,7 @@
 #define BOUNDEDBUFFER_H
 
 #include <array>
+#include <stdexcept>
 
 namespace fixed_size
 {
@@ -94,6 +95,6 @@ namespace fixed_size
 
 int main()
 {
-  BoundedBuffer<int, 10> buff;
+  fixed_size::BoundedBuffer<int, 10> buff;
   return 0;
 }

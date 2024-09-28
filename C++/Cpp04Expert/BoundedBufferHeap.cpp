@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <algorithm>
+#include <stdexcept>
 
 namespace heap_memory
 {
@@ -147,6 +148,6 @@ namespace heap_memory
 
 int main()
 {
-  BoundedBuffer<int> buff{10};
+  heap_memory::BoundedBuffer<int> buff{10};
   return 0;
 }
