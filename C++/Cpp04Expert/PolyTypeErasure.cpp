@@ -13,24 +13,24 @@
 // #############
 void draw(std::string s, std::ostream& os)
 {
-  os << "String: " << s;
+  os << "String (" << s << ")";
 }
 
 void draw(int i, std::ostream& os)
 {
-  os << "Int: " << i;
+  os << "Int (" << i << ")";
 }
 
-struct rect
+struct rectange
 {
-  rect(double w, double h) : width{w}, height{h} {}
+  rectange(double w, double h) : width{w}, height{h} {}
   double width;
   double height;
 };
 
-void draw(rect const& r, std::ostream& on)
+void draw(rectange const& r, std::ostream& on)
 {
-  on << "Rectangle: " << r.width << "," << r.height;
+  on << "Rectangle (" << r.width << "," << r.height << ")";
 }
 
 struct circle
@@ -41,7 +41,7 @@ struct circle
 
 void draw(circle const& c, std::ostream& on)
 {
-  on << "Circle: " << c.radius;
+  on << "Circle (" << c.radius << ")";
 }
 
 
@@ -51,19 +51,23 @@ void draw(circle const& c, std::ostream& on)
 struct widget
 {
   template<typename T>
-  widget(T x) : self_(std::make_unique<model<T>>(std::move(x))) {} // Mauro: need to make it explicit?
+  widget(T x) : self_(std::make_unique<model<T>>(std::move(x))) {}
 
-  ~widget() = default; // Rule of 5, non-virtual
+  ~widget() = default; // Rule of 5 for Generale Manager class type, non-virtual
 
+  // ###################################
+  // # Copy constructor and assignment #
+  // ###################################
   widget(widget const& x) : self_(x.self_->copy_()) {}
-
-  widget(widget&&) noexcept = default; // Mauro: DesDeMovA?
-
   widget& operator=(widget const& x) &
   {
     return *this = widget(x);
   }
 
+  // ###################################
+  // # Move constructor and assignment #
+  // ###################################
+  widget(widget&&) noexcept = default;
   widget& operator=(widget&&) & noexcept = default;
 
   friend void draw(widget const& x, std::ostream& out)
@@ -77,7 +81,7 @@ private:
     virtual ~concept_t() = default;
     virtual std::unique_ptr<concept_t> copy_() const = 0;
     virtual void draw_(std::ostream&) const = 0;
-    concept_t& operator=(concept_t&&) = delete;
+    concept_t& operator=(concept_t&&) = delete; // Rule Destructor defined Deleted Move Assignment (DesDeMovA): non copiable, non movable
   };
 
   template<typename T>
@@ -101,8 +105,6 @@ private:
   std::unique_ptr<concept_t> self_;
 };
 
-using widgets = std::vector<widget>;
-
 struct composite
 {
   void add(widget w)
@@ -121,20 +123,20 @@ struct composite
   }
 
 private:
-  widgets content{};
+  std::vector<widget> content{};
 };
 
 
-// ###############
-// # Make a test #
-// ###############
+// ##################
+// # Test composite #
+// ##################
 void testComposite()
 {
   std::ostringstream out{};
 
   composite c{};
   c.add(circle(double{42}));
-  c.add(rect(double{4}, double{2}));
+  c.add(rectange(double{4}, double{2}));
   c.add(circle(double{4}));
   c.add(42);
   c.add("A C string");
@@ -145,12 +147,46 @@ void testComposite()
 }
 
 
+// #########################
+// # Test dynamic dispatch #
+// #########################
+void useWidget(const widget& w)
+{
+  std::ostringstream out{};
+  draw(w, out);
+  std::cout << out.str() << std::endl;
+}
+
+void testDynamicDispatch()
+{
+  composite c{};
+  char choice;
+
+  std::cout << "Choose shape (c or r): ";
+  std::cin >> choice;
+
+  if (choice == 'c')
+    c.add(circle(double{42}));
+  else if (choice == 'r')
+    c.add(rectange(double{4}, double{2}));
+  else
+    {
+      std::cout << "Wrong choice: " << choice << std::endl;
+      return;
+    }
+  widget w{c};
+
+  useWidget(w);
+}
+
+
 // ########
 // # Main #
 // ########
 int main()
 {
   testComposite();
+  testDynamicDispatch();
 
   return 0;
 }
