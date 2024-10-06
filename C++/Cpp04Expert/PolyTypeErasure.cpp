@@ -36,18 +36,24 @@ void draw(rectangle const& r, std::ostream& out)
 struct circle
 {
   circle(double r) : radius{r} {}
+
+  void draw(std::ostream& out) const
+  {
+    out << "Circle (" << radius << ")";
+  }
+
+private:
   double radius;
 };
-
-void draw(circle const& c, std::ostream& out)
-{
-  out << "Circle (" << c.radius << ")";
-}
 
 
 // ###############################
 // # Polymprphic drawable widget #
 // ###############################
+
+template<typename T, typename U>
+concept has_draw = requires (T t, U u) { t.draw(u); };
+
 struct widget
 {
   template<typename T>
@@ -101,7 +107,10 @@ private:
 
     void draw_(std::ostream& out) const
     {
-      draw(data_, out); // Dispatch to global function
+      if constexpr (has_draw<T, std::ostream>)
+        data_.draw(out); // Dispatch to memeber function
+      else
+        draw(data_, out); // Dispatch to free function
     }
 
     T data_;
@@ -159,7 +168,13 @@ void testComposite()
 void useWidget(const widget& w)
 {
   std::ostringstream out{};
+
+  // The dynamic dispatch happens via the std::unique_ptr<concept_t>
+  // where the corresponding virtual member function(s) are then
+  // dispatched to the corresponding member functions of model<T>
+  // which then calls the appropriate free function draw(...)
   draw(w, out);
+
   std::cout << out.str() << std::endl;
 }
 
@@ -171,6 +186,9 @@ void testDynamicDispatch()
   std::cout << "Choose shape (c or r): ";
   std::cin >> choice;
 
+  // Implicit conversion of std::unique_ptr<model<circle>>
+  // to std::uniuqe_ptr<concept_t>. The heap-allocated objects
+  // remain of type model<circle> and model<rectangle>, respectively
   if (choice == 'c')
     c.add(circle(double{42}));
   else if (choice == 'r')
