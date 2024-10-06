@@ -11,26 +11,26 @@
 // #############
 // # Drawables #
 // #############
-void draw(std::string s, std::ostream& os)
+void draw(std::string s, std::ostream& out)
 {
-  os << "String (" << s << ")";
+  out << "String (" << s << ")";
 }
 
-void draw(int i, std::ostream& os)
+void draw(int i, std::ostream& out)
 {
-  os << "Int (" << i << ")";
+  out << "Int (" << i << ")";
 }
 
-struct rectange
+struct rectangle
 {
-  rectange(double w, double h) : width{w}, height{h} {}
+  rectangle(double w, double h) : width{w}, height{h} {}
   double width;
   double height;
 };
 
-void draw(rectange const& r, std::ostream& on)
+void draw(rectangle const& r, std::ostream& out)
 {
-  on << "Rectangle (" << r.width << "," << r.height << ")";
+  out << "Rectangle (" << r.width << "," << r.height << ")";
 }
 
 struct circle
@@ -39,9 +39,9 @@ struct circle
   double radius;
 };
 
-void draw(circle const& c, std::ostream& on)
+void draw(circle const& c, std::ostream& out)
 {
-  on << "Circle (" << c.radius << ")";
+  out << "Circle (" << c.radius << ")";
 }
 
 
@@ -51,15 +51,18 @@ void draw(circle const& c, std::ostream& on)
 struct widget
 {
   template<typename T>
-  widget(T x) : self_(std::make_unique<model<T>>(std::move(x))) {}
+  explicit widget(T x) : self_(std::make_unique<model<T>>(std::move(x))) {}
+  // explicit means that the constructor cannot be used for implicit conversions and copy-initialization
 
-  ~widget() = default; // Rule of 5 for Generale Manager class type, non-virtual
+  ~widget() = default; // Rule of 5 for Generale Manager class type
+  // Non-virtual because there are no virtual member functions
+  // in widget and it is not intended to be inherited
 
   // ###################################
   // # Copy constructor and assignment #
   // ###################################
-  widget(widget const& x) : self_(x.self_->copy_()) {}
-  widget& operator=(widget const& x) &
+  widget(widget const& x) noexcept : self_(x.self_->copy_()) {}
+  widget& operator=(widget const& x) & noexcept
   {
     return *this = widget(x);
   }
@@ -67,6 +70,8 @@ struct widget
   // ###################################
   // # Move constructor and assignment #
   // ###################################
+  // From the Howard Hinnant table defining the destructor implies not declaring the move
+  // operations, that's why if we want them we need to resurrect them with default
   widget(widget&&) noexcept = default;
   widget& operator=(widget&&) & noexcept = default;
 
@@ -107,19 +112,20 @@ private:
 
 struct composite
 {
-  void add(widget w)
+  template<typename T>
+  void add(T w)
   {
     content.emplace_back(std::move(w));
   }
 
-  friend void draw(composite const& c, std::ostream& on)
+  friend void draw(composite const& c, std::ostream& out)
   {
-    on << "{ ";
+    out << "{ ";
     for(widget const& drawable: c.content)
       {
-        draw(drawable, on); on << ", ";
+        draw(drawable, out); out << ", ";
       }
-    on << " }";
+    out << " }";
   }
 
 private:
@@ -136,7 +142,7 @@ void testComposite()
 
   composite c{};
   c.add(circle(double{42}));
-  c.add(rectange(double{4}, double{2}));
+  c.add(rectangle(double{4}, double{2}));
   c.add(circle(double{4}));
   c.add(42);
   c.add("A C string");
@@ -168,7 +174,7 @@ void testDynamicDispatch()
   if (choice == 'c')
     c.add(circle(double{42}));
   else if (choice == 'r')
-    c.add(rectange(double{4}, double{2}));
+    c.add(rectangle(double{4}, double{2}));
   else
     {
       std::cout << "Wrong choice: " << choice << std::endl;
@@ -178,6 +184,17 @@ void testDynamicDispatch()
 
   useWidget(w);
 }
+
+
+// ########################################################################
+// # Explanation:                                                         #
+// # The dynamic dispatch is encapsulated in the widget::model class      #
+// # Whenever you create a widget with a new type T, that type will       #
+// # instantiate a new version of model<T> providing the dynamic dispatch #
+// # This instantiation happens at compile time on usage                  #
+// # The dynamic dispatch through widget::concept_t's virtual functions   #
+// # happens at run-time                                                  #
+// ########################################################################
 
 
 // ########
