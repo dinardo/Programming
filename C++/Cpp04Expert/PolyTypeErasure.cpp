@@ -37,7 +37,7 @@ struct circle
 {
   circle(double r) : radius{r} {}
 
-  void draw(std::ostream& out) const
+  void draw(std::ostream& out) const &
   {
     out << "Circle (" << radius << ")";
   }
@@ -90,8 +90,8 @@ private:
   struct concept_t // Polymorphic base
   {
     virtual ~concept_t() = default;
-    virtual std::unique_ptr<concept_t> copy_() const = 0;
-    virtual void draw_(std::ostream&) const = 0;
+    virtual std::unique_ptr<concept_t> copy_() const & = 0;
+    virtual void draw_(std::ostream&) const & = 0;
     concept_t& operator=(concept_t&&) = delete; // Rule Destructor defined Deleted Move Assignment (DesDeMovA): non copiable, non movable
   };
 
@@ -100,12 +100,12 @@ private:
   {
     model(T x) : data_(std::move(x)) {}
 
-    std::unique_ptr<concept_t> copy_() const
+    std::unique_ptr<concept_t> copy_() const &
     {
       return std::make_unique<model>(this->data_); // Cloning
     }
 
-    void draw_(std::ostream& out) const
+    void draw_(std::ostream& out) const &
     {
       if constexpr (has_draw<T, std::ostream>)
         data_.draw(out); // Dispatch to memeber function
