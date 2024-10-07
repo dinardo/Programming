@@ -14,25 +14,18 @@
 
 using raw_memory::BoundedBuffer;
 
-//TODO: Add template signature
 template<typename T, typename MUTEX=std::mutex, typename CONDVAR=std::condition_variable>
 struct BoundedQueue
 {
 
-  //TODO: Add member types
   using size_type = BoundedBuffer<T>::size_type;
 
-  //TODO: Add constructors
-  explicit
-  BoundedQueue(size_type sz)
-    : buffer{sz}{}
+  explicit BoundedQueue(size_type sz) : buffer{sz}{}
 
-  BoundedQueue(BoundedQueue const &other)
-    :buffer{(std::scoped_lock{other.mutex},other.buffer)}
+  BoundedQueue(BoundedQueue const &other) : buffer{(std::scoped_lock{other.mutex},other.buffer)}
   {}
 
-  BoundedQueue(BoundedQueue &&other)
-    :buffer{(std::scoped_lock{other.mutex},std::move(other.buffer))}
+  BoundedQueue(BoundedQueue &&other) : buffer{(std::scoped_lock{other.mutex},std::move(other.buffer))}
   {}
 
   BoundedQueue & operator=(BoundedQueue const &other)
@@ -122,7 +115,6 @@ struct BoundedQueue
 
   T pop()
   {
-    //TODO: Implement
     std::unique_lock guard(mutex);
     is_not_empty.wait(guard,[this](){ return !buffer.empty(); });
     auto result = std::move(buffer.front());
@@ -167,7 +159,6 @@ struct BoundedQueue
 
 private:
   BoundedBuffer<T> buffer;
-  //TODO: Add mutex
   mutable MUTEX mutex{};
   CONDVAR is_not_full{};
   CONDVAR is_not_empty{};
