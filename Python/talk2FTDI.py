@@ -137,7 +137,7 @@ def main():
             print('\n--> Channel #' + chn)
             sendANDreceive(device,'INSTrument:SELect OUT' + chn)
             sendANDreceive(device,'SOURce:CHANnel ' + chn)
-            queryProtections(device, 2.1, 5.0)
+            queryProtections(device, voltProtect = 2.1, currentProtect = 5.0)
             setCurrent(device, 4.0)
             setVoltage(device, 1.785)
 
