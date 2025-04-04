@@ -1,4 +1,4 @@
-Strumenti per il trattamento dati client-side al tempo di HTML5
+# Strumenti per il trattamento dati client-side al tempo di HTML5
 
 JavaScript: tutte le strutture dati sono “array associativi”
 
@@ -12,7 +12,7 @@ On my MAC:
 Framework to program in javaScript: Ext Js
 Server: either Apache (i.e. httpd) or Node.Js (Node.Js permette di programmare qualunque cosa in javaScript)
 
-Il “form” senza “action” va evitato ! Il “form” passa tutta l’informazione contenuta al suo interno al file definito proprio con “action”
+Il “form” senza “action” va evitato ! Il “form” passa tutta l’informazione contenuta al suo interno al file definito proprio con “action"
 
 PHP viene eseguito dal lato server, perché solo il server lo sa eseguire
 I browser sanno interpretare: HTML5, CSS, javaScript
@@ -24,9 +24,9 @@ Metodi di query di HTTP5 http://en.wikipedia.org/wiki/Hypertext_Transfer_Protoco
 
 Al posto di usare shared memory (la cui memoria non viene disallocata se il processo che l’ha creata muore), e meglio usare mmap (file in memoria)
 
-Fare presentazioni in html (S5): http://www.mi.infn.it/~prelz/html5/js/node/s5/primer.html
+**Fare presentazioni in html (S5): http://www.mi.infn.it/~prelz/html5/js/node/s5/primer.html**
 
-Mio client
+**Mio client**
 ```
 <Directory "/home/*/public_html">
 	AllowOverride FileInfo AuthConfig Limit Indexes
@@ -35,7 +35,7 @@ Mio client
 </Directory>
 ```
 
-Mio cgi
+**Mio cgi**
 ```
 <IfModule alias_module>
  	ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
@@ -48,7 +48,7 @@ Mio cgi
 </Directory>
 ```
 
-To learn:
+**To learn**
 1. Usare i “form”: slide #2 del corso
 2. Realizzare scambio dati client-server asincrono senza l’uso di framework
 3. Attraversabilita` directory “serverSide”
